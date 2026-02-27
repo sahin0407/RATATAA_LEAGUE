@@ -1718,8 +1718,14 @@ const matchesRef = ref(db, "matches");
 
 onValue(matchesRef, (snapshot) => {
   const data = snapshot.val();
+
   if (data) {
     state.matches = data;
+    renderAll();
+  } else {
+    // Firebase ফাঁকা থাকলে
+    state.matches = generateFixtures();
+    set(matchesRef, state.matches);
     renderAll();
   }
 });
