@@ -919,32 +919,11 @@ function generateFixtures() {
 // ============================================================
 
 /** loadState(): reads from localStorage, falls back to fresh state */
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const saved = JSON.parse(raw);
-      // Merge: keep fixtures if they exist, regenerate if not
-      state.matches = (saved.matches && saved.matches.length === 18)
-        ? saved.matches
-        : generateFixtures();
-    } else {
-      state.matches = generateFixtures();
-    }
-  } catch (e) {
-    console.warn('[Ratataa] localStorage parse error, resetting:', e);
-    state.matches = generateFixtures();
-  }
-}
 
+  
 /** saveState(): persists current matches to localStorage */
-function saveState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ matches: state.matches }));
-  } catch (e) {
-    console.error('[Ratataa] localStorage save error:', e);
-  }
-}
+
+ 
 
 // ============================================================
 // CALCULATION ENGINE
@@ -1712,12 +1691,42 @@ function markAllPlayed() {
 
 /** init(): load state and render everything */
 function init() {
-  loadState();
+  
   renderAll();
   showSection('home');
 }
 
 init();
+</script>
+  <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCxrnnqhwYwjpO0-UMKJvwmjz_d4P9Dx3nY",
+  authDomain: "ratataa-league.firebaseapp.com",
+  databaseURL: "https://ratataa-league-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "ratataa-league",
+  storageBucket: "ratataa-league.firebasestorage.app",
+  messagingSenderId: "546435389017",
+  appId: "1:546435389017:web:ce21f836942c46134e8348"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const matchesRef = ref(db, "matches");
+
+onValue(matchesRef, (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    state.matches = data;
+    renderAll();
+  }
+});
+
+window.saveState = function() {
+  set(matchesRef, state.matches);
+};
 </script>
 </body>
 </html>
