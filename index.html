@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RATATAA LEAGUE — Where Legends Collide</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* ============================================================
+     RATATAA LEAGUE — Core CSS
+     Custom properties, animations, glassmorphism, typography
+     ============================================================ */
+
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,900;1,9..40,400&display=swap');
+
+  :root {
+    --bg-base:       #080810;
+    --bg-card:       rgba(255,255,255,0.04);
+    --bg-card-hover: rgba(255,255,255,0.07);
+    --border:        rgba(255,255,255,0.08);
+    --border-hover:  rgba(99,102,241,0.5);
+    --indigo:        #6366f1;
+    --indigo-dim:    rgba(99,102,241,0.15);
+    --gold:          #eab308;
+    --gold-dim:      rgba(234,179,8,0.15);
+    --white:         #f8fafc;
+    --muted:         #64748b;
+    --danger:        #ef4444;
+    --success:       #22c55e;
+    --font-display:  'Bebas Neue', 'Impact', sans-serif;
+    --font-body:     'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: var(--bg-base); color: var(--white); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+  body { background: var(--bg-base); min-height: 100vh; overflow-x: hidden; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg-base); }
+  ::-webkit-scrollbar-thumb { background: var(--indigo); border-radius: 4px; }
+
+  /* ── Display font ── */
+  .font-display { font-family: var(--font-display); letter-spacing: 0.04em; }
+
+  /* ── Glassmorphism card ── */
+  .glass {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+  .glass:hover { background: var(--bg-card-hover); border-color: var(--border-hover); }
+
+  /* ── Gradient orb background ── */
+  .orb-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    animation: orb-float 12s ease-in-out infinite;
+  }
+  .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #6366f1, transparent); top: -15%; left: 20%; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #eab308, transparent); bottom: 0; right: 5%; animation-delay: -5s; }
+  .orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #7c3aed, transparent); top: 40%; left: -5%; animation-delay: -3s; }
+
+  @keyframes orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, -30px) scale(1.05); }
+    66% { transform: translate(-15px, 20px) scale(0.95); }
+  }
+
+  /* ── Shimmer on gold text ── */
+  .gold-shimmer {
+    background: linear-gradient(90deg, #eab308 0%, #fde68a 45%, #eab308 55%, #ca8a04 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% center; } }
+
+  /* ── Indigo glow button ── */
+  .btn-indigo {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-indigo::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent); opacity:0; transition:opacity 0.2s; }
+  .btn-indigo:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(99,102,241,0.45); }
+  .btn-indigo:hover::after { opacity:1; }
+  .btn-indigo:active { transform: translateY(0); }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #eab308, #ca8a04);
+    color: #000;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(234,179,8,0.4); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-ghost:hover { border-color: var(--indigo); color: var(--white); }
+
+  /* ── Nav ── */
+  #top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,8,16,0.85);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: all 0.3s;
+  }
+  .nav-link {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--white); background: var(--indigo-dim); }
+  .nav-link.active { color: var(--indigo); }
+
+  /* ── Bottom mobile nav ── */
+  #bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,8,16,0.95);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    display: flex;
+    padding: 0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+  }
+  .bnav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 2px; cursor: pointer; padding: 0.4rem 0;
+    color: var(--muted); font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .bnav-item.active { color: var(--indigo); }
+  .bnav-item svg { width: 20px; height: 20px; }
+
+  /* ── Sections ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Table ── */
+  .league-table { width: 100%; border-collapse: collapse; }
+  .league-table th {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); padding: 0.75rem 0.5rem; text-align: center; border-bottom: 1px solid var(--border);
+  }
+  .league-table th:first-child { text-align: left; }
+  .league-table td { padding: 0.85rem 0.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.875rem; vertical-align: middle; }
+  .league-table td:first-child { text-align: left; }
+  .league-table tr:last-child td { border-bottom: none; }
+  .league-table tbody tr { transition: background 0.2s; }
+  .league-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  /* rank badges */
+  .rank-1 { color: var(--gold); }
+  .rank-2 { color: #94a3b8; }
+  .rank-3 { color: #cd7f32; }
+
+  /* ── Fixture / Result cards ── */
+  .fixture-card {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .fixture-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-1px); }
+
+  /* ── Score badge ── */
+  .score-badge {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.06); border-radius: 8px;
+    padding: 0.4rem 0.75rem; font-family: var(--font-display);
+    font-size: 1.4rem; letter-spacing: 0.05em; white-space: nowrap;
+  }
+
+  /* ── Status pill ── */
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 20px;
+  }
+  .pill-upcoming { background: rgba(99,102,241,0.15); color: var(--indigo); }
+  .pill-played { background: rgba(34,197,94,0.15); color: var(--success); }
+
+  /* ── Modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    opacity: 0; transition: opacity 0.25s;
+    pointer-events: none;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: #0f0f1a;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    max-width: 520px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.3s ease;
+    position: relative;
+  }
+  .modal-backdrop.open .modal-box { transform: scale(1) translateY(0); }
+
+  /* ── Admin ── */
+  #admin-view { display: none; }
+  #admin-view.active { display: flex; }
+
+  /* ── Input ── */
+  .input-field {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.875rem;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .input-field:focus { border-color: var(--indigo); }
+  .input-field::placeholder { color: var(--muted); }
+
+  /* ── Stat box ── */
+  .stat-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 0.25rem;
+  }
+  .stat-box .val { font-family: var(--font-display); font-size: 2rem; letter-spacing: 0.03em; color: var(--white); }
+  .stat-box .lbl { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── Player avatar ── */
+  .player-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Progress bar ── */
+  .prog-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+  /* ── Fade in ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up { animation: fadeUp 0.4s ease forwards; }
+
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  /* ── Admin sidebar (desktop only) ── */
+  #admin-sidebar {
+    width: 220px; flex-shrink: 0;
+    background: rgba(0,0,0,0.4);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 1.5rem 0;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.7rem 1.25rem; width: 100%;
+    cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: 500;
+    transition: all 0.2s; border-left: 2px solid transparent;
+    background: none; border-right:none; border-top:none; border-bottom:none;
+    text-decoration: none; text-align: left;
+  }
+  .sidebar-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+  .sidebar-item.active { color: var(--indigo); border-left-color: var(--indigo); background: var(--indigo-dim); }
+
+  /* ── Admin bottom tab bar (mobile only) ── */
+  #admin-tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
+    background: rgba(5,5,15,0.97);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    display: none;
+    padding: 0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+  }
+  .admin-tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; cursor: pointer; padding: 0.45rem 0;
+    color: var(--muted); font-size: 0.58rem; letter-spacing: 0.07em;
+    text-transform: uppercase; font-weight: 600; transition: color 0.2s;
+    background: none; border: none; outline: none;
+  }
+  .admin-tab svg { width: 20px; height: 20px; }
+  .admin-tab.active { color: var(--indigo); }
+
+  /* ── Mobile admin overrides ── */
+  @media(max-width:767px) {
+    #admin-sidebar { display: none !important; }
+    #admin-tabbar  { display: flex !important; }
+    #admin-body    { flex-direction: column !important; }
+    #admin-content-wrap { padding: 1rem !important; padding-bottom: 85px !important; }
+    #admin-topbar  { padding: 0.6rem 1rem !important; }
+    .admin-panel h2 { font-size: 1.8rem !important; }
+    .admin-panel p.subtitle { font-size: 0.75rem !important; margin-bottom: 1.25rem !important; }
+    .tools-grid { grid-template-columns: 1fr !important; }
+    .admin-match-row { padding: 0.75rem !important; gap: 0.5rem !important; }
+    .admin-match-score { min-width: 60px !important; padding: 0.3rem 0.5rem !important; }
+    .admin-match-name { font-size: 0.75rem !important; }
+    .admin-match-avatar { width: 28px !important; height: 28px !important; }
+  }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1e1e2e; border: 1px solid var(--indigo); color: var(--white);
+    padding: 0.7rem 1.5rem; border-radius: 30px; font-size: 0.8rem; font-weight: 500;
+    z-index: 500; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Number input (score) ── */
+  input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* ── Hero ── */
+  #hero-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; padding-top: 80px; }
+
+  /* ── Glow text ── */
+  .glow-indigo { text-shadow: 0 0 40px rgba(99,102,241,0.5); }
+
+  /* responsive utils */
+  @media(max-width:640px) {
+    .hide-mobile { display: none !important; }
+    .fixture-card { grid-template-columns: 1fr auto 1fr; gap: 0.5rem; padding: 0.75rem; }
+  }
+  @media(min-width:768px) {
+    #bottom-nav { display: none; }
+  }
+  @media(max-width:767px) {
+    #top-nav .nav-links { display: none; }
+    main { padding-bottom: 80px; }
+  }
+
+  /* ── Table scroll wrapper ── */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOAST NOTIFICATION
+     ============================================================ -->
+<div id="toast">✓ Saved</div>
+
+<!-- ============================================================
+     TOP NAV (Desktop)
+     ============================================================ -->
+<nav id="top-nav">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <!-- Logo -->
+    <button onclick="showSection('home')" class="font-display text-xl tracking-widest hover:opacity-80 transition-opacity" style="color:var(--gold)">
+      RATATAA
+    </button>
+    <!-- Desktop Links -->
+    <div class="nav-links flex items-center gap-1">
+      <button class="nav-link active" data-section="home" onclick="showSection('home')">Home</button>
+      <button class="nav-link" data-section="fixtures" onclick="showSection('fixtures')">Fixtures</button>
+      <button class="nav-link" data-section="results" onclick="showSection('results')">Results</button>
+      <button class="nav-link" data-section="scorers" onclick="showSection('scorers')">Top Scorers</button>
+      <button class="nav-link" data-section="players" onclick="showSection('players')">Players</button>
+      <button class="nav-link" onclick="openLoginModal()" style="display:flex;align-items:center;gap:0.4rem;">
+        <svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Admin
+      </button>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="w-2 h-2 rounded-full pulse-dot" style="background:var(--success)"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     BOTTOM NAV (Mobile)
+     ============================================================ -->
+<nav id="bottom-nav">
+  <button class="bnav-item active" data-section="home" onclick="showSection('home')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Home
+  </button>
+  <button class="bnav-item" data-section="fixtures" onclick="showSection('fixtures')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+    Fixtures
+  </button>
+  <button class="bnav-item" data-section="results" onclick="showSection('results')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Results
+  </button>
+  <button class="bnav-item" data-section="scorers" onclick="showSection('scorers')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    Scorers
+  </button>
+  <button class="bnav-item" data-section="players" onclick="showSection('players')">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    Players
+  </button>
+  <button class="bnav-item" onclick="openLoginModal()">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+    Admin
+  </button>
+</nav>
+
+<!-- ============================================================
+     MAIN PUBLIC VIEW
+     ============================================================ -->
+<main id="public-view">
+
+  <!-- ── HOME ── -->
+  <div id="section-home" class="section active">
+
+    <!-- HERO -->
+    <section id="hero-section">
+      <div class="orb-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="relative z-10 text-center px-4 max-w-5xl mx-auto fade-up">
+        <!-- League badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8" style="background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3)">
+          <span class="w-1.5 h-1.5 rounded-full pulse-dot" style="background:var(--indigo)"></span>
+          <span class="text-xs font-semibold tracking-widest uppercase" style="color:var(--indigo)">Season 2026</span>
+        </div>
+
+        <h1 class="font-display glow-indigo" style="font-size:clamp(4rem,14vw,10rem);line-height:0.9;color:var(--white)">
+          RATATAA<br><span class="gold-shimmer">LEAGUE</span>
+        </h1>
+
+        <p class="mt-6 text-lg font-light tracking-widest uppercase" style="color:var(--muted)">Where Legends Collide</p>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <button onclick="showSection('fixtures')" class="btn-indigo px-8 py-3 rounded-full text-sm font-semibold tracking-wider uppercase">
+            View Fixtures
+          </button>
+          <button onclick="document.getElementById('standings-anchor').scrollIntoView({behavior:'smooth'})" class="btn-ghost px-8 py-3 rounded-full text-sm font-semibold tracking-wider uppercase">
+            Live Standings
+          </button>
+        </div>
+
+        <!-- Quick stats row -->
+        <div class="mt-16 grid grid-cols-3 gap-4 max-w-md mx-auto" id="hero-stats"></div>
+      </div>
+
+      <!-- scroll indicator -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40">
+        <div class="w-px h-10 bg-gradient-to-b from-transparent to-white opacity-50"></div>
+        <span class="text-xs tracking-widest uppercase" style="color:var(--muted)">Scroll</span>
+      </div>
+    </section>
+
+    <!-- STANDINGS -->
+    <section id="standings-anchor" class="max-w-7xl mx-auto px-4 py-20">
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <p class="text-xs font-semibold tracking-widest uppercase mb-1" style="color:var(--indigo)">Live Table</p>
+          <h2 class="font-display text-5xl" style="color:var(--white)">STANDINGS</h2>
+        </div>
+        <button onclick="copyStandings()" class="btn-ghost px-4 py-2 rounded-lg text-xs flex items-center gap-2">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          Copy
+        </button>
+      </div>
+      <div class="glass rounded-2xl overflow-hidden" id="standings-table"></div>
+
+      <!-- League stats -->
+      <div class="mt-12">
+        <p class="text-xs font-semibold tracking-widest uppercase mb-4" style="color:var(--muted)">Tournament Stats</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="league-stats-boxes"></div>
+      </div>
+    </section>
+
+  </div><!-- /#section-home -->
+
+  <!-- ── FIXTURES ── -->
+  <div id="section-fixtures" class="section">
+    <div class="max-w-3xl mx-auto px-4 pt-28 pb-20">
+      <div class="mb-10">
+        <p class="text-xs font-semibold tracking-widest uppercase mb-1" style="color:var(--indigo)">Full Schedule</p>
+        <h2 class="font-display text-5xl" style="color:var(--white)">FIXTURES</h2>
+      </div>
+      <div id="fixtures-list" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div id="section-results" class="section">
+    <div class="max-w-3xl mx-auto px-4 pt-28 pb-20">
+      <div class="mb-10">
+        <p class="text-xs font-semibold tracking-widest uppercase mb-1" style="color:var(--gold)">Match Archive</p>
+        <h2 class="font-display text-5xl" style="color:var(--white)">RESULTS</h2>
+      </div>
+      <div id="results-list" class="space-y-3"></div>
+      <div id="no-results" class="text-center py-20" style="color:var(--muted)">
+        <p class="font-display text-3xl mb-2">NO RESULTS YET</p>
+        <p class="text-sm">Matches will appear here once played</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOP SCORERS ── -->
+  <div id="section-scorers" class="section">
+    <div class="max-w-2xl mx-auto px-4 pt-28 pb-20">
+      <div class="mb-10">
+        <p class="text-xs font-semibold tracking-widest uppercase mb-1" style="color:var(--gold)">Golden Boot Race</p>
+        <h2 class="font-display text-5xl" style="color:var(--white)">TOP SCORERS</h2>
+      </div>
+      <div id="scorers-list" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- ── PLAYERS ── -->
+  <div id="section-players" class="section">
+    <div class="max-w-4xl mx-auto px-4 pt-28 pb-20">
+      <div class="mb-10">
+        <p class="text-xs font-semibold tracking-widest uppercase mb-1" style="color:var(--indigo)">The Four</p>
+        <h2 class="font-display text-5xl" style="color:var(--white)">PLAYERS</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="players-grid"></div>
+    </div>
+  </div>
+
+</main><!-- /#public-view -->
+
+<!-- ============================================================
+     ADMIN LOGIN MODAL
+     ============================================================ -->
+<div id="login-modal" class="modal-backdrop">
+  <div class="modal-box p-8 max-w-sm" style="text-align:center">
+    <p class="text-xs tracking-widest uppercase mb-1" style="color:var(--indigo)">Access Control</p>
+    <h2 class="font-display text-3xl mb-6">ADMIN PORTAL</h2>
+    <div class="space-y-3 text-left">
+      <div>
+        <label class="block text-xs font-semibold tracking-wider uppercase mb-1.5" style="color:var(--muted)">Username</label>
+        <input id="login-user" type="text" class="input-field" placeholder="Username" autocomplete="off" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold tracking-wider uppercase mb-1.5" style="color:var(--muted)">Password</label>
+        <input id="login-pass" type="password" class="input-field" placeholder="Password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <p id="login-error" class="text-xs hidden" style="color:var(--danger)">❌ Invalid credentials</p>
+      <button onclick="doLogin()" class="btn-indigo w-full py-3 rounded-xl text-sm font-semibold tracking-wider uppercase mt-2">
+        Enter
+      </button>
+      <button onclick="closeLoginModal()" class="btn-ghost w-full py-2.5 rounded-xl text-sm tracking-wider">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN VIEW  — Mobile-first layout
+     Top bar + bottom tab nav on mobile / sidebar on desktop
+     ============================================================ -->
+<div id="admin-view" class="min-h-screen" style="background:var(--bg-base)">
+
+  <!-- ── Admin Top Bar ── -->
+  <div id="admin-topbar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-3.5"
+       style="background:rgba(4,4,14,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+    <div class="flex items-center gap-2.5">
+      <span class="font-display text-xl tracking-widest" style="color:var(--gold)">RATATAA</span>
+      <span class="text-xs font-bold tracking-widest uppercase px-2 py-0.5 rounded-md"
+            style="background:var(--indigo-dim);color:var(--indigo)">Admin</span>
+    </div>
+    <button onclick="adminLogout()"
+            class="btn-ghost flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold">
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+      </svg>
+      Logout
+    </button>
+  </div>
+
+  <!-- ── Inner flex: sidebar (desktop) + content ── -->
+  <div id="admin-body" class="flex" style="padding-top:56px;min-height:100vh">
+
+    <!-- Desktop Sidebar -->
+    <aside id="admin-sidebar">
+      <div class="px-5 mb-5">
+        <p class="text-xs font-semibold tracking-widest uppercase" style="color:var(--muted)">Command Center</p>
+      </div>
+      <button class="sidebar-item active" onclick="adminShowPanel('matches',this)">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+        Matches
+      </button>
+      <button class="sidebar-item" onclick="adminShowPanel('standings',this)">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Standings
+      </button>
+      <button class="sidebar-item" onclick="adminShowPanel('tools',this)">
+        <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        Tools
+      </button>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div id="admin-content-wrap" class="flex-1 overflow-auto p-4 md:p-8">
+
+      <!-- ── MATCHES PANEL ── -->
+      <div id="admin-panel-matches" class="admin-panel">
+        <div class="mb-5">
+          <h2 class="font-display subtitle" style="font-size:2rem;color:var(--white)">MATCH CONTROL</h2>
+          <p class="text-xs mt-0.5 subtitle" style="color:var(--muted)">Tap any match to enter or update the score.</p>
+        </div>
+
+        <!-- Progress bar strip -->
+        <div class="glass rounded-xl p-4 mb-4 flex items-center gap-4">
+          <div class="flex-1">
+            <div class="flex justify-between text-xs mb-2" style="color:var(--muted)">
+              <span>Progress</span>
+              <span id="admin-progress-label">0 / 18</span>
+            </div>
+            <div class="prog-bar">
+              <div id="admin-progress-bar" class="prog-fill" style="width:0%;background:linear-gradient(90deg,var(--indigo),var(--gold))"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="admin-matches-list" class="space-y-2"></div>
+      </div>
+
+      <!-- ── STANDINGS PANEL ── -->
+      <div id="admin-panel-standings" class="admin-panel hidden">
+        <div class="mb-5">
+          <h2 class="font-display" style="font-size:2rem;color:var(--white)">LIVE STANDINGS</h2>
+          <p class="text-xs mt-0.5" style="color:var(--muted)">Auto-updates after every score entry.</p>
+        </div>
+        <div class="glass rounded-2xl overflow-hidden" id="admin-standings-table"></div>
+      </div>
+
+      <!-- ── TOOLS PANEL ── -->
+      <div id="admin-panel-tools" class="admin-panel hidden">
+        <div class="mb-5">
+          <h2 class="font-display" style="font-size:2rem;color:var(--white)">TOOLS</h2>
+          <p class="text-xs mt-0.5" style="color:var(--muted)">Data management and advanced controls.</p>
+        </div>
+
+        <div class="tools-grid grid grid-cols-1 gap-3">
+
+          <!-- Export -->
+          <div class="glass rounded-2xl p-5 flex items-center justify-between gap-4">
+            <div>
+              <p class="font-semibold text-sm">Export Data</p>
+              <p class="text-xs mt-0.5" style="color:var(--muted)">Download full tournament JSON</p>
+            </div>
+            <button onclick="exportData()" class="btn-indigo px-5 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0">Export</button>
+          </div>
+
+          <!-- Import -->
+          <div class="glass rounded-2xl p-5 flex items-center justify-between gap-4">
+            <div>
+              <p class="font-semibold text-sm">Import Data</p>
+              <p class="text-xs mt-0.5" style="color:var(--muted)">Restore from JSON backup</p>
+            </div>
+            <label class="btn-ghost px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer flex-shrink-0">
+              Import
+              <input type="file" accept=".json" class="hidden" onchange="importData(event)" />
+            </label>
+          </div>
+
+          <!-- Reset -->
+          <div class="glass rounded-2xl p-5 flex items-center justify-between gap-4">
+            <div>
+              <p class="font-semibold text-sm" style="color:var(--danger)">Reset Tournament</p>
+              <p class="text-xs mt-0.5" style="color:var(--muted)">Clears all scores, keeps fixtures</p>
+            </div>
+            <button onclick="confirmReset()" class="px-5 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0"
+                    style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:var(--danger);cursor:pointer;transition:all 0.2s"
+                    onmouseover="this.style.background='rgba(239,68,68,0.28)'"
+                    onmouseout="this.style.background='rgba(239,68,68,0.15)'">Reset</button>
+          </div>
+
+          <!-- Debug -->
+          <div class="glass rounded-2xl p-5">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="font-semibold text-sm" style="color:var(--muted)">Debug Tools</p>
+                <p class="text-xs mt-0.5" style="color:var(--muted)">Reveal hidden controls</p>
+              </div>
+              <button onclick="revealDebug(this)" class="btn-ghost px-5 py-2.5 rounded-xl text-sm font-semibold flex-shrink-0">Reveal</button>
+            </div>
+            <div id="debug-tools" class="hidden mt-4 pt-4" style="border-top:1px solid var(--border)">
+              <button onclick="markAllPlayed()" class="w-full py-3 rounded-xl text-sm font-semibold"
+                      style="background:var(--gold-dim);border:1px solid rgba(234,179,8,0.3);color:var(--gold);cursor:pointer">
+                Mark All Played (Random Scores)
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Mobile Bottom Tab Bar ── -->
+  <div id="admin-tabbar">
+    <button class="admin-tab active" onclick="adminShowPanel('matches',this)" id="atab-matches">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+      </svg>
+      Matches
+    </button>
+    <button class="admin-tab" onclick="adminShowPanel('standings',this)" id="atab-standings">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+      Standings
+    </button>
+    <button class="admin-tab" onclick="adminShowPanel('tools',this)" id="atab-tools">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
+      </svg>
+      Tools
+    </button>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     MATCH SCORE MODAL (Admin)
+     ============================================================ -->
+<div id="score-modal" class="modal-backdrop">
+  <div class="modal-box p-7 max-w-sm">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-display text-2xl">ENTER SCORE</h3>
+      <button onclick="closeScoreModal()" style="color:var(--muted);cursor:pointer;font-size:1.5rem;line-height:1">&times;</button>
+    </div>
+    <p id="score-modal-match" class="text-sm mb-6 font-semibold text-center" style="color:var(--muted)"></p>
+    <div class="grid grid-cols-3 items-center gap-4 mb-6">
+      <div class="text-center">
+        <p id="score-modal-p1" class="font-display text-xl mb-2"></p>
+        <input id="score-p1" type="number" min="0" max="99" class="input-field text-center text-2xl font-display" placeholder="0" />
+      </div>
+      <div class="text-center font-display text-2xl" style="color:var(--muted)">VS</div>
+      <div class="text-center">
+        <p id="score-modal-p2" class="font-display text-xl mb-2"></p>
+        <input id="score-p2" type="number" min="0" max="99" class="input-field text-center text-2xl font-display" placeholder="0" />
+      </div>
+    </div>
+    <button onclick="saveScore()" class="btn-indigo w-full py-3 rounded-xl text-sm font-semibold tracking-wider uppercase">Save Score</button>
+    <button onclick="clearScore()" class="btn-ghost w-full py-2.5 rounded-xl text-sm tracking-wider mt-2">Clear Result</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     MATCH REPORT MODAL (Public)
+     ============================================================ -->
+<div id="report-modal" class="modal-backdrop">
+  <div class="modal-box p-7">
+    <div class="flex items-center justify-between mb-4">
+      <span class="pill pill-played">Match Report</span>
+      <button onclick="closeReportModal()" style="color:var(--muted);cursor:pointer;font-size:1.5rem;line-height:1">&times;</button>
+    </div>
+    <div id="report-modal-content"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PLAYER PROFILE MODAL
+     ============================================================ -->
+<div id="player-modal" class="modal-backdrop">
+  <div class="modal-box p-7">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="font-display text-2xl">PLAYER PROFILE</h3>
+      <button onclick="closePlayerModal()" style="color:var(--muted);cursor:pointer;font-size:1.5rem;line-height:1">&times;</button>
+    </div>
+    <div id="player-modal-content"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT ENGINE
+     ============================================================ -->
+<script>
+// ============================================================
+// DATA MODEL & CONSTANTS
+// ============================================================
+
+/** Fixed players — never change */
+const PLAYERS = ['Sahin', 'Mahashin', 'Nasim', 'Khokan'];
+
+/** Player accent colors for visual identity */
+const PLAYER_COLORS = {
+  Sahin:   { bg: 'rgba(99,102,241,0.2)',  border: '#6366f1', dot: '#6366f1' },
+  Mahashin:{ bg: 'rgba(234,179,8,0.2)',   border: '#eab308', dot: '#eab308' },
+  Nasim:   { bg: 'rgba(34,197,94,0.2)',   border: '#22c55e', dot: '#22c55e' },
+  Khokan:  { bg: 'rgba(239,68,68,0.2)',   border: '#ef4444', dot: '#ef4444' },
+};
+
+const STORAGE_KEY = 'ratataaLeagueData';
+
+/** App state — loaded from or saved to localStorage */
+let state = {
+  matches: [],     // [{id, player1, player2, player1Goals, player2Goals, played}]
+  adminLoggedIn: false,
+};
+
+let currentScoreMatchId = null; // which match is open in score modal
+
+// ============================================================
+// FIXTURE GENERATION
+// Produces exactly 18 matches (3 × each unique pair),
+// shuffled so NO two consecutive matches share a player.
+// ============================================================
+
+/**
+ * generateFixtures()
+ * 1. Build all unique pairs from 4 players → 6 pairs.
+ * 2. Duplicate each pair 3 times → 18 matches.
+ * 3. Shuffle array randomly.
+ * 4. Run smart swap passes to eliminate consecutive same-player clashes.
+ */
+function generateFixtures() {
+  // Step 1: all unique pairs
+  const pairs = [];
+  for (let i = 0; i < PLAYERS.length; i++) {
+    for (let j = i + 1; j < PLAYERS.length; j++) {
+      pairs.push([PLAYERS[i], PLAYERS[j]]);
+    }
+  }
+
+  // Step 2: 3 copies of each pair → 18 matches
+  let matches = [];
+  for (let r = 0; r < 3; r++) {
+    pairs.forEach(([p1, p2]) => {
+      matches.push({ player1: p1, player2: p2, player1Goals: null, player2Goals: null, played: false });
+    });
+  }
+
+  // Step 3: Fisher-Yates shuffle
+  for (let i = matches.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [matches[i], matches[j]] = [matches[j], matches[i]];
+  }
+
+  // Step 4: eliminate consecutive player clashes
+  // We do up to 100 passes; each pass scans the list and swaps offending adjacent pairs
+  const sharesPlayer = (a, b) =>
+    a.player1 === b.player1 || a.player1 === b.player2 ||
+    a.player2 === b.player1 || a.player2 === b.player2;
+
+  for (let pass = 0; pass < 100; pass++) {
+    let changed = false;
+    for (let i = 0; i < matches.length - 1; i++) {
+      if (sharesPlayer(matches[i], matches[i + 1])) {
+        // Find a valid swap target further in the array
+        for (let k = i + 2; k < matches.length; k++) {
+          if (!sharesPlayer(matches[i], matches[k]) &&
+              !sharesPlayer(matches[k], matches[i + 1]) &&
+              (k + 1 >= matches.length || !sharesPlayer(matches[i + 1 - 1], matches[k]))) {
+            [matches[i + 1], matches[k]] = [matches[k], matches[i + 1]];
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!changed) break; // fully resolved
+  }
+
+  // Assign stable IDs
+  matches = matches.map((m, idx) => ({ id: idx + 1, ...m }));
+
+  return matches;
+}
+
+// ============================================================
+// LOCALSTORAGE — LOAD / SAVE
+// ============================================================
+
+/** loadState(): reads from localStorage, falls back to fresh state */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      // Merge: keep fixtures if they exist, regenerate if not
+      state.matches = (saved.matches && saved.matches.length === 18)
+        ? saved.matches
+        : generateFixtures();
+    } else {
+      state.matches = generateFixtures();
+    }
+  } catch (e) {
+    console.warn('[Ratataa] localStorage parse error, resetting:', e);
+    state.matches = generateFixtures();
+  }
+}
+
+/** saveState(): persists current matches to localStorage */
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ matches: state.matches }));
+  } catch (e) {
+    console.error('[Ratataa] localStorage save error:', e);
+  }
+}
+
+// ============================================================
+// CALCULATION ENGINE
+// Derives all stats live from matches array — no caching.
+// ============================================================
+
+/**
+ * computeStandings()
+ * Returns array of player stat objects sorted by:
+ * 1. Points  2. GD  3. GF  4. Name
+ */
+function computeStandings() {
+  const stats = {};
+  PLAYERS.forEach(p => {
+    stats[p] = { name: p, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, gd: 0, pts: 0 };
+  });
+
+  state.matches.forEach(m => {
+    if (!m.played) return;
+    const g1 = Number(m.player1Goals), g2 = Number(m.player2Goals);
+    const p1 = stats[m.player1], p2 = stats[m.player2];
+
+    p1.played++; p2.played++;
+    p1.gf += g1; p1.ga += g2;
+    p2.gf += g2; p2.ga += g1;
+
+    if (g1 > g2) {
+      p1.won++; p1.pts += 3;
+      p2.lost++;
+    } else if (g1 < g2) {
+      p2.won++; p2.pts += 3;
+      p1.lost++;
+    } else {
+      p1.drawn++; p2.drawn++;
+      p1.pts += 1; p2.pts += 1;
+    }
+  });
+
+  PLAYERS.forEach(p => { stats[p].gd = stats[p].gf - stats[p].ga; });
+
+  return Object.values(stats).sort((a, b) =>
+    b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+  );
+}
+
+/**
+ * computeTopScorers()
+ * Sorted by GF, then pts, then GD
+ */
+function computeTopScorers() {
+  const standings = computeStandings();
+  return [...standings].sort((a, b) => b.gf - a.gf || b.pts - a.pts || b.gd - a.gd);
+}
+
+/**
+ * computeLeagueStats()
+ * Global tournament metrics
+ */
+function computeLeagueStats() {
+  const played = state.matches.filter(m => m.played);
+  const totalGoals = played.reduce((sum, m) => sum + Number(m.player1Goals) + Number(m.player2Goals), 0);
+  const avgGoals = played.length ? (totalGoals / played.length).toFixed(1) : '—';
+
+  let biggestWin = null, biggestMargin = 0;
+  played.forEach(m => {
+    const diff = Math.abs(Number(m.player1Goals) - Number(m.player2Goals));
+    if (diff > biggestMargin) {
+      biggestMargin = diff;
+      const winner = Number(m.player1Goals) > Number(m.player2Goals) ? m.player1 : m.player2;
+      const loser  = Number(m.player1Goals) > Number(m.player2Goals) ? m.player2 : m.player1;
+      biggestWin = `${winner} ${Math.max(m.player1Goals, m.player2Goals)}-${Math.min(m.player1Goals, m.player2Goals)} ${loser}`;
+    }
+  });
+
+  return { played: played.length, total: 18, totalGoals, avgGoals, biggestWin };
+}
+
+/**
+ * headToHead(p1, p2)
+ * Returns {p1wins, p2wins, draws} between two players
+ */
+function headToHead(p1, p2) {
+  let p1w = 0, p2w = 0, dr = 0;
+  state.matches.forEach(m => {
+    if (!m.played) return;
+    const involves = (m.player1 === p1 && m.player2 === p2) || (m.player1 === p2 && m.player2 === p1);
+    if (!involves) return;
+    const g1 = m.player1 === p1 ? Number(m.player1Goals) : Number(m.player2Goals);
+    const g2 = m.player1 === p1 ? Number(m.player2Goals) : Number(m.player1Goals);
+    if (g1 > g2) p1w++;
+    else if (g2 > g1) p2w++;
+    else dr++;
+  });
+  return { p1wins: p1w, p2wins: p2w, draws: dr };
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+function showSection(id) {
+  // If admin is viewing, just return
+  if (document.getElementById('admin-view').classList.contains('active')) return;
+
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('section-' + id);
+  if (target) {
+    target.classList.add('active');
+    // add fade animation
+    target.style.animation = 'none';
+    requestAnimationFrame(() => { target.style.animation = 'fadeUp 0.35s ease'; });
+  }
+
+  // Update nav active states
+  document.querySelectorAll('[data-section]').forEach(el => {
+    el.classList.toggle('active', el.dataset.section === id);
+  });
+
+  // Scroll to top of public view
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  renderAll();
+}
+
+// ============================================================
+// RENDER — PUBLIC
+// ============================================================
+
+/** renderAll(): re-renders every visible public section */
+function renderAll() {
+  renderHeroStats();
+  renderStandings('standings-table');
+  renderLeagueStatsBoxes();
+  renderFixtures();
+  renderResults();
+  renderTopScorers();
+  renderPlayers();
+}
+
+/** player avatar HTML */
+function avatarHTML(name, size = 42) {
+  const c = PLAYER_COLORS[name];
+  return `<div class="player-avatar" style="width:${size}px;height:${size}px;background:${c.bg};border:1px solid ${c.border}">
+    <span style="color:${c.dot};font-size:${size * 0.38}px">${name[0]}</span>
+  </div>`;
+}
+
+/** renderHeroStats(): tiny stats row below hero CTA */
+function renderHeroStats() {
+  const lgs = computeLeagueStats();
+  const el = document.getElementById('hero-stats');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="text-center">
+      <p class="font-display text-3xl" style="color:var(--indigo)">${lgs.played}</p>
+      <p class="text-xs mt-1" style="color:var(--muted)">Matches Played</p>
+    </div>
+    <div class="text-center border-x" style="border-color:var(--border)">
+      <p class="font-display text-3xl" style="color:var(--gold)">${lgs.totalGoals}</p>
+      <p class="text-xs mt-1" style="color:var(--muted)">Total Goals</p>
+    </div>
+    <div class="text-center">
+      <p class="font-display text-3xl" style="color:var(--success)">${lgs.avgGoals}</p>
+      <p class="text-xs mt-1" style="color:var(--muted)">Avg Goals</p>
+    </div>
+  `;
+}
+
+/** renderStandings(containerId) — reusable for public + admin */
+function renderStandings(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const rows = computeStandings();
+  const rankColors = ['rank-1', 'rank-2', 'rank-3', ''];
+
+  el.innerHTML = `
+    <div class="table-scroll">
+    <table class="league-table" style="min-width:480px">
+      <thead>
+        <tr>
+          <th style="min-width:140px">Player</th>
+          <th>P</th><th>W</th><th>D</th><th>L</th>
+          <th>GF</th><th>GA</th><th class="hide-mobile">GD</th>
+          <th style="color:var(--indigo)">PTS</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map((r, i) => {
+          const c = PLAYER_COLORS[r.name];
+          return `<tr>
+            <td>
+              <div class="flex items-center gap-2.5">
+                <span class="font-display text-sm ${rankColors[i]}">${i + 1}</span>
+                <div style="width:8px;height:8px;border-radius:50%;background:${c.dot};flex-shrink:0"></div>
+                <span class="font-semibold">${r.name}</span>
+              </div>
+            </td>
+            <td>${r.played}</td>
+            <td style="color:var(--success)">${r.won}</td>
+            <td style="color:var(--muted)">${r.drawn}</td>
+            <td style="color:var(--danger)">${r.lost}</td>
+            <td>${r.gf}</td>
+            <td>${r.ga}</td>
+            <td class="hide-mobile">${r.gd > 0 ? '+' + r.gd : r.gd}</td>
+            <td><span class="font-display text-lg" style="color:var(--indigo)">${r.pts}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    </div>
+  `;
+}
+
+/** renderLeagueStatsBoxes() */
+function renderLeagueStatsBoxes() {
+  const el = document.getElementById('league-stats-boxes');
+  if (!el) return;
+  const ls = computeLeagueStats();
+  el.innerHTML = `
+    <div class="stat-box"><span class="val" style="color:var(--indigo)">${ls.played}<span class="font-display text-base" style="color:var(--muted)">/${ls.total}</span></span><span class="lbl">Matches Played</span></div>
+    <div class="stat-box"><span class="val" style="color:var(--gold)">${ls.totalGoals}</span><span class="lbl">Total Goals</span></div>
+    <div class="stat-box"><span class="val" style="color:var(--success)">${ls.avgGoals}</span><span class="lbl">Avg Goals / Match</span></div>
+    <div class="stat-box"><span class="val text-base font-semibold leading-tight" style="color:var(--white)">${ls.biggestWin || '—'}</span><span class="lbl">Biggest Win</span></div>
+  `;
+}
+
+/** renderFixtures() */
+function renderFixtures() {
+  const el = document.getElementById('fixtures-list');
+  if (!el) return;
+  el.innerHTML = state.matches.map((m, idx) => {
+    const label = m.played
+      ? `<span class="pill pill-played">✓ Played</span>`
+      : `<span class="pill pill-upcoming">Upcoming</span>`;
+    const scoreHTML = m.played
+      ? `<div class="score-badge text-center"><span>${m.player1Goals}</span><span style="color:var(--muted);font-size:0.9rem">:</span><span>${m.player2Goals}</span></div>`
+      : `<div class="text-center text-xs font-semibold tracking-widest uppercase" style="color:var(--muted);min-width:60px">Match ${m.id}</div>`;
+    return `
+      <div class="fixture-card fade-up" style="animation-delay:${idx * 0.03}s" onclick="${m.played ? 'openReportModal(' + m.id + ')' : ''}">
+        <div class="flex items-center gap-2.5 justify-end">
+          <span class="font-semibold text-sm text-right">${m.player1}</span>
+          ${avatarHTML(m.player1)}
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          ${scoreHTML}
+          ${label}
+        </div>
+        <div class="flex items-center gap-2.5 justify-start">
+          ${avatarHTML(m.player2)}
+          <span class="font-semibold text-sm">${m.player2}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/** renderResults() */
+function renderResults() {
+  const played = state.matches.filter(m => m.played);
+  const rl = document.getElementById('results-list');
+  const nr = document.getElementById('no-results');
+  if (!rl) return;
+
+  if (played.length === 0) {
+    rl.innerHTML = '';
+    nr && (nr.style.display = 'block');
+    return;
+  }
+  nr && (nr.style.display = 'none');
+
+  rl.innerHTML = played.map((m, idx) => {
+    const g1 = Number(m.player1Goals), g2 = Number(m.player2Goals);
+    const winner = g1 > g2 ? m.player1 : g2 > g1 ? m.player2 : null;
+    return `
+      <div class="fixture-card fade-up" style="animation-delay:${idx * 0.03}s;cursor:pointer" onclick="openReportModal(${m.id})">
+        <div class="flex items-center gap-2.5 justify-end">
+          <span class="font-semibold text-sm text-right ${winner === m.player1 ? '' : 'opacity-50'}">${m.player1}</span>
+          ${avatarHTML(m.player1)}
+        </div>
+        <div class="score-badge text-center">
+          <span class="${winner === m.player1 ? 'gold-shimmer' : ''}">${g1}</span>
+          <span style="color:var(--muted);font-size:0.9rem">–</span>
+          <span class="${winner === m.player2 ? 'gold-shimmer' : ''}">${g2}</span>
+        </div>
+        <div class="flex items-center gap-2.5 justify-start">
+          ${avatarHTML(m.player2)}
+          <span class="font-semibold text-sm ${winner === m.player2 ? '' : 'opacity-50'}">${m.player2}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/** renderTopScorers() */
+function renderTopScorers() {
+  const el = document.getElementById('scorers-list');
+  if (!el) return;
+  const scorers = computeTopScorers();
+  const maxGF = Math.max(...scorers.map(s => s.gf), 1);
+  const medals = ['🥇', '🥈', '🥉', ''];
+
+  el.innerHTML = scorers.map((s, i) => {
+    const c = PLAYER_COLORS[s.name];
+    const pct = Math.round((s.gf / maxGF) * 100);
+    return `
+      <div class="glass rounded-xl p-5 flex items-center gap-4 fade-up" style="animation-delay:${i * 0.07}s">
+        <span class="font-display text-2xl" style="min-width:36px">${medals[i] || i + 1}</span>
+        ${avatarHTML(s.name, 48)}
+        <div class="flex-1 min-w-0">
+          <div class="flex items-baseline justify-between gap-2 mb-2">
+            <span class="font-semibold">${s.name}</span>
+            <span class="font-display text-2xl" style="color:${c.dot}">${s.gf}</span>
+          </div>
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:${pct}%;background:${c.dot}"></div>
+          </div>
+          <div class="flex gap-3 mt-1.5 text-xs" style="color:var(--muted)">
+            <span>${s.pts} pts</span>
+            <span>GD ${s.gd > 0 ? '+' : ''}${s.gd}</span>
+            <span>${s.played} played</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/** renderPlayers() — grid of clickable player cards */
+function renderPlayers() {
+  const el = document.getElementById('players-grid');
+  if (!el) return;
+  const standings = computeStandings();
+  const standingsMap = {};
+  standings.forEach((s, i) => { standingsMap[s.name] = { ...s, rank: i + 1 }; });
+
+  el.innerHTML = PLAYERS.map((name, idx) => {
+    const s = standingsMap[name];
+    const c = PLAYER_COLORS[name];
+    return `
+      <div class="glass rounded-2xl p-6 cursor-pointer fade-up" style="animation-delay:${idx * 0.07}s;border-color:${c.border}20" onclick="openPlayerModal('${name}')">
+        <div class="flex items-center gap-3 mb-5">
+          ${avatarHTML(name, 52)}
+          <div>
+            <p class="font-display text-2xl" style="color:var(--white)">${name.toUpperCase()}</p>
+            <p class="text-xs" style="color:${c.dot}">Rank #${s.rank}</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-center">
+          ${[['P', s.played], ['W', s.won], ['GF', s.gf], ['PTS', s.pts]].map(([l, v]) => `
+            <div>
+              <p class="font-display text-xl" style="color:var(--white)">${v}</p>
+              <p class="text-xs" style="color:var(--muted)">${l}</p>
+            </div>`).join('')}
+        </div>
+        <div class="mt-4 flex items-center justify-between">
+          <span class="text-xs" style="color:var(--muted)">View profile</span>
+          <svg class="w-4 h-4" style="color:var(--indigo)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// MODALS — PUBLIC
+// ============================================================
+
+/** openReportModal(matchId) */
+function openReportModal(matchId) {
+  const m = state.matches.find(x => x.id === matchId);
+  if (!m || !m.played) return;
+  const g1 = Number(m.player1Goals), g2 = Number(m.player2Goals);
+  const winner = g1 > g2 ? m.player1 : g2 > g1 ? m.player2 : null;
+  const isDraw = g1 === g2;
+  const c1 = PLAYER_COLORS[m.player1], c2 = PLAYER_COLORS[m.player2];
+
+  document.getElementById('report-modal-content').innerHTML = `
+    <div class="flex justify-around items-center py-6">
+      <div class="text-center">
+        ${avatarHTML(m.player1, 64)}
+        <p class="font-display text-xl mt-3 ${winner === m.player1 ? 'gold-shimmer' : ''}">${m.player1.toUpperCase()}</p>
+        ${winner === m.player1 ? '<span class="pill" style="background:var(--gold-dim);color:var(--gold)">WINNER</span>' : ''}
+      </div>
+      <div class="text-center">
+        <div class="font-display" style="font-size:3.5rem;line-height:1;color:var(--white)">${g1}<span style="color:var(--muted);font-size:0.6em"> – </span>${g2}</div>
+        ${isDraw ? '<div class="mt-2 pill" style="background:rgba(100,116,139,0.2);color:#94a3b8">DRAW</div>' : ''}
+        <p class="text-xs mt-3" style="color:var(--muted)">Match #${m.id}</p>
+      </div>
+      <div class="text-center">
+        ${avatarHTML(m.player2, 64)}
+        <p class="font-display text-xl mt-3 ${winner === m.player2 ? 'gold-shimmer' : ''}">${m.player2.toUpperCase()}</p>
+        ${winner === m.player2 ? '<span class="pill" style="background:var(--gold-dim);color:var(--gold)">WINNER</span>' : ''}
+      </div>
+    </div>
+    ${!isDraw ? `<div class="divider"></div>
+    <div class="text-center">
+      <p class="text-xs font-semibold tracking-widest uppercase" style="color:var(--muted)">Goal Difference</p>
+      <p class="font-display text-3xl mt-1" style="color:var(--indigo)">+${Math.abs(g1 - g2)}</p>
+    </div>` : ''}
+  `;
+  document.getElementById('report-modal').classList.add('open');
+}
+function closeReportModal() { document.getElementById('report-modal').classList.remove('open'); }
+
+/** openPlayerModal(name) */
+function openPlayerModal(name) {
+  const standings = computeStandings();
+  const s = standings.find(x => x.name === name);
+  const rank = standings.findIndex(x => x.name === name) + 1;
+  const c = PLAYER_COLORS[name];
+
+  // Head-to-head vs all others
+  const opponents = PLAYERS.filter(p => p !== name);
+  const h2hHTML = opponents.map(opp => {
+    const h = headToHead(name, opp);
+    const total = h.p1wins + h.p2wins + h.draws;
+    return `
+      <div class="flex items-center justify-between py-2.5 border-b" style="border-color:var(--border)">
+        <div class="flex items-center gap-2">
+          ${avatarHTML(opp, 32)}
+          <span class="font-semibold text-sm">${opp}</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          <span style="color:var(--success)">${h.p1wins}W</span>
+          <span style="color:var(--muted)">${h.draws}D</span>
+          <span style="color:var(--danger)">${h.p2wins}L</span>
+          <span style="color:var(--muted)">(${total} played)</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('player-modal-content').innerHTML = `
+    <div class="flex items-center gap-4 mb-6 pb-6" style="border-bottom:1px solid var(--border)">
+      ${avatarHTML(name, 72)}
+      <div>
+        <h2 class="font-display text-4xl" style="color:${c.dot}">${name.toUpperCase()}</h2>
+        <p class="text-sm mt-0.5" style="color:var(--muted)">Rank #${rank} · ${s.pts} points</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-4 gap-3 mb-6">
+      ${[['Played',s.played,'var(--white)'],['Wins',s.won,'var(--success)'],['Goals For',s.gf,'var(--gold)'],['Points',s.pts,'var(--indigo)']].map(([l,v,col]) =>
+        `<div class="text-center glass rounded-xl p-3"><p class="font-display text-2xl" style="color:${col}">${v}</p><p class="text-xs mt-0.5" style="color:var(--muted)">${l}</p></div>`
+      ).join('')}
+    </div>
+    <p class="text-xs font-semibold tracking-widest uppercase mb-3" style="color:var(--muted)">Head-to-Head</p>
+    ${h2hHTML}
+  `;
+  document.getElementById('player-modal').classList.add('open');
+}
+function closePlayerModal() { document.getElementById('player-modal').classList.remove('open'); }
+
+// ============================================================
+// COPY STANDINGS
+// ============================================================
+function copyStandings() {
+  const rows = computeStandings();
+  const txt = `RATATAA LEAGUE — STANDINGS\n${'─'.repeat(50)}\n` +
+    rows.map((r, i) => `${i+1}. ${r.name.padEnd(10)} ${r.pts}pts  ${r.played}P ${r.won}W ${r.drawn}D ${r.lost}L  GF:${r.gf} GA:${r.ga} GD:${r.gd > 0 ? '+'+r.gd : r.gd}`).join('\n');
+  navigator.clipboard.writeText(txt).then(() => showToast('Standings copied!')).catch(() => showToast('Copy failed'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// ADMIN — LOGIN
+// ============================================================
+
+/** Keyboard shortcut: press 'A' to open admin login */
+document.addEventListener('keydown', e => {
+  if (e.key === 'a' || e.key === 'A') {
+    const active = document.activeElement;
+    // Don't trigger if user is typing in an input
+    if (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') return;
+    if (!document.getElementById('admin-view').classList.contains('active')) {
+      openLoginModal();
+    }
+  }
+  if (e.key === 'Escape') {
+    closeLoginModal(); closeScoreModal(); closeReportModal(); closePlayerModal();
+  }
+});
+
+function openLoginModal() {
+  document.getElementById('login-modal').classList.add('open');
+  setTimeout(() => document.getElementById('login-user').focus(), 100);
+}
+function closeLoginModal() {
+  document.getElementById('login-modal').classList.remove('open');
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+/** doLogin(): validates credentials (case-sensitive) */
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (user === 'Ratataa' && pass === 'Ego') {
+    closeLoginModal();
+    enterAdminView();
+  } else {
+    document.getElementById('login-error').classList.remove('hidden');
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+// ============================================================
+// ADMIN — VIEW
+// ============================================================
+
+function enterAdminView() {
+  document.getElementById('public-view').style.display = 'none';
+  document.getElementById('top-nav').style.display = 'none';
+  document.getElementById('bottom-nav').style.display = 'none';
+  document.getElementById('admin-view').classList.add('active');
+  // Reset to Matches panel on every login
+  adminShowPanel('matches', document.getElementById('atab-matches'));
+  renderAdminMatches();
+  renderStandings('admin-standings-table');
+  window.scrollTo(0, 0);
+}
+
+function adminLogout() {
+  document.getElementById('admin-view').classList.remove('active');
+  document.getElementById('public-view').style.display = 'block';
+  document.getElementById('top-nav').style.display = 'block';
+  if (window.innerWidth < 768) document.getElementById('bottom-nav').style.display = 'flex';
+  renderAll();
+}
+
+/**
+ * adminShowPanel(id, triggerEl)
+ * Switches active panel and syncs BOTH sidebar items (desktop)
+ * and bottom tab buttons (mobile) to active state.
+ */
+function adminShowPanel(id, triggerEl) {
+  // Hide all panels
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
+  document.getElementById('admin-panel-' + id)?.classList.remove('hidden');
+
+  // Deactivate all sidebar items + tab buttons
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
+
+  // Activate the clicked trigger (works for both sidebar & tab)
+  if (triggerEl) triggerEl.classList.add('active');
+
+  // Also sync the matching counterpart by panel id
+  const tabEl = document.getElementById('atab-' + id);
+  if (tabEl) tabEl.classList.add('active');
+
+  // Re-render standings if needed
+  if (id === 'standings') renderStandings('admin-standings-table');
+
+  // Scroll content to top on mobile
+  const wrap = document.getElementById('admin-content-wrap');
+  if (wrap) wrap.scrollTop = 0;
+}
+
+/**
+ * renderAdminMatches(): editable match list in admin
+ * Mobile-optimised: compact rows, touch-friendly tap targets,
+ * player names truncated, score prominent in centre.
+ * Also updates the progress bar strip.
+ */
+function renderAdminMatches() {
+  const el = document.getElementById('admin-matches-list');
+  if (!el) return;
+
+  // Update progress bar
+  const playedCount = state.matches.filter(m => m.played).length;
+  const pct = Math.round((playedCount / 18) * 100);
+  const pb = document.getElementById('admin-progress-bar');
+  const pl = document.getElementById('admin-progress-label');
+  if (pb) pb.style.width = pct + '%';
+  if (pl) pl.textContent = playedCount + ' / 18';
+
+  el.innerHTML = state.matches.map((m, idx) => {
+    const g1 = m.played ? m.player1Goals : '–';
+    const g2 = m.played ? m.player2Goals : '–';
+    const c1 = PLAYER_COLORS[m.player1];
+    const c2 = PLAYER_COLORS[m.player2];
+    const rowBorder = m.played ? 'rgba(34,197,94,0.2)' : 'var(--border)';
+
+    return `<div class="admin-match-row flex items-center gap-2 glass rounded-2xl px-3 py-3 cursor-pointer fade-up"
+                 style="animation-delay:${idx * 0.018}s;border-color:${rowBorder};min-height:56px"
+                 onclick="openScoreModal(${m.id})">
+
+      <!-- Match number -->
+      <span class="font-display text-sm flex-shrink-0" style="color:var(--muted);width:22px;text-align:center">${m.id}</span>
+
+      <!-- Player 1 -->
+      <div class="flex items-center gap-1.5 flex-1 min-w-0 justify-end">
+        <span class="admin-match-name font-semibold text-sm truncate" style="max-width:70px">${m.player1}</span>
+        <div class="admin-match-avatar flex-shrink-0 rounded-full flex items-center justify-center font-display"
+             style="width:32px;height:32px;background:${c1.bg};border:1px solid ${c1.border};font-size:0.85rem;color:${c1.dot}">
+          ${m.player1[0]}
+        </div>
+      </div>
+
+      <!-- Score -->
+      <div class="admin-match-score flex items-center gap-1 flex-shrink-0 rounded-xl px-3 py-1.5"
+           style="background:${m.played ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.05)'};min-width:72px;justify-content:center">
+        <span class="font-display text-base" style="color:${m.played ? 'var(--white)' : 'var(--muted)'}">${g1}</span>
+        <span style="color:var(--muted);font-size:0.75rem">:</span>
+        <span class="font-display text-base" style="color:${m.played ? 'var(--white)' : 'var(--muted)'}">${g2}</span>
+      </div>
+
+      <!-- Player 2 -->
+      <div class="flex items-center gap-1.5 flex-1 min-w-0 justify-start">
+        <div class="admin-match-avatar flex-shrink-0 rounded-full flex items-center justify-center font-display"
+             style="width:32px;height:32px;background:${c2.bg};border:1px solid ${c2.border};font-size:0.85rem;color:${c2.dot}">
+          ${m.player2[0]}
+        </div>
+        <span class="admin-match-name font-semibold text-sm truncate" style="max-width:70px">${m.player2}</span>
+      </div>
+
+      <!-- Status dot -->
+      <div class="flex-shrink-0 w-2 h-2 rounded-full" style="background:${m.played ? 'var(--success)' : 'var(--muted)'}"></div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// ADMIN — SCORE MODAL
+// ============================================================
+
+function openScoreModal(matchId) {
+  const m = state.matches.find(x => x.id === matchId);
+  if (!m) return;
+  currentScoreMatchId = matchId;
+  document.getElementById('score-modal-p1').textContent = m.player1.toUpperCase();
+  document.getElementById('score-modal-p2').textContent = m.player2.toUpperCase();
+  document.getElementById('score-modal-match').textContent = `Match #${m.id}`;
+  document.getElementById('score-p1').value = m.played ? m.player1Goals : '';
+  document.getElementById('score-p2').value = m.played ? m.player2Goals : '';
+  document.getElementById('score-modal').classList.add('open');
+  setTimeout(() => document.getElementById('score-p1').focus(), 100);
+}
+function closeScoreModal() {
+  document.getElementById('score-modal').classList.remove('open');
+  currentScoreMatchId = null;
+}
+
+/** saveScore(): writes goals to state and persists */
+function saveScore() {
+  if (!currentScoreMatchId) return;
+  const g1 = parseInt(document.getElementById('score-p1').value);
+  const g2 = parseInt(document.getElementById('score-p2').value);
+  if (isNaN(g1) || isNaN(g2) || g1 < 0 || g2 < 0) {
+    showToast('Enter valid scores!'); return;
+  }
+  const m = state.matches.find(x => x.id === currentScoreMatchId);
+  m.player1Goals = g1;
+  m.player2Goals = g2;
+  m.played = true;
+  saveState();
+  closeScoreModal();
+  renderAdminMatches();
+  renderStandings('admin-standings-table');
+  showToast('Score saved!');
+}
+
+/** clearScore(): removes result from a match */
+function clearScore() {
+  if (!currentScoreMatchId) return;
+  const m = state.matches.find(x => x.id === currentScoreMatchId);
+  m.player1Goals = null; m.player2Goals = null; m.played = false;
+  saveState();
+  closeScoreModal();
+  renderAdminMatches();
+  renderStandings('admin-standings-table');
+  showToast('Result cleared');
+}
+
+// ============================================================
+// ADMIN — TOOLS
+// ============================================================
+
+/** confirmReset(): two-step confirmation before reset */
+function confirmReset() {
+  if (!confirm('⚠️ Reset all results?\n\nThis will clear every score but keep the fixture list.\nThis cannot be undone.')) return;
+  state.matches.forEach(m => { m.played = false; m.player1Goals = null; m.player2Goals = null; });
+  saveState();
+  renderAdminMatches();
+  renderStandings('admin-standings-table');
+  showToast('Tournament reset!');
+}
+
+/** exportData(): downloads full state as JSON */
+function exportData() {
+  const blob = new Blob([JSON.stringify({ matches: state.matches }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ratataa-league-data.json';
+  a.click();
+  showToast('Exported!');
+}
+
+/** importData(): reads JSON file and restores state */
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.matches && Array.isArray(data.matches)) {
+        state.matches = data.matches;
+        saveState();
+        renderAdminMatches();
+        renderStandings('admin-standings-table');
+        showToast('Imported!');
+      } else {
+        showToast('Invalid file format');
+      }
+    } catch { showToast('Parse error'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/** revealDebug(): shows hidden debug tools on second click */
+function revealDebug(btn) {
+  const tools = document.getElementById('debug-tools');
+  if (tools.classList.contains('hidden')) {
+    tools.classList.remove('hidden');
+    btn.textContent = 'Hide';
+  } else {
+    tools.classList.add('hidden');
+    btn.textContent = 'Reveal';
+  }
+}
+
+/** markAllPlayed(): debug — randomizes all scores 0–5 */
+function markAllPlayed() {
+  if (!confirm('Mark all 18 matches as played with random scores?')) return;
+  state.matches.forEach(m => {
+    m.player1Goals = Math.floor(Math.random() * 6);
+    m.player2Goals = Math.floor(Math.random() * 6);
+    m.played = true;
+  });
+  saveState();
+  renderAdminMatches();
+  renderStandings('admin-standings-table');
+  showToast('All matches marked played!');
+}
+
+// ============================================================
+// MODAL BACKDROP CLICK — close on outside click
+// ============================================================
+['report-modal', 'player-modal'].forEach(id => {
+  document.getElementById(id)?.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('open');
+    }
+  });
+});
+
+// ============================================================
+// BOOT
+// ============================================================
+
+/** init(): load state and render everything */
+function init() {
+  loadState();
+  renderAll();
+  showSection('home');
+}
+
+init();
+</script>
+</body>
+</html>
